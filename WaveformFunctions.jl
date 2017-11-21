@@ -75,3 +75,16 @@ function deconv_tau!(samples::Vector, tau::Real)
     samples = deconv_tau(samples, tau)
 
 end
+
+using LsqFit
+
+model_exp(x, p) = p[1]*exp.(-x.*p[2])
+
+function get_tau(samples::Vector, delta_t::Real, firstsample::Integer, lastsample::Integer)
+
+    xdata = convert(Array{Float64}, linspace(firstsample, lastsample, lastsample-firstsample+1))
+    ydata = convert(Array{Float64}, samples[firstsample:lastsample])
+    fitresult = curve_fit(model_exp, xdata, ydata, [2000., 1/4600.])
+    delta_t / fitresult.param[2]
+
+end
