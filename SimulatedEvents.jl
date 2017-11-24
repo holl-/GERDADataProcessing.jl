@@ -21,7 +21,7 @@ type Event
 end
 
 #function to read in converted MaGe events and generate pulses from them
-function create_events(setup::MJDSigGen.Struct_MJD_Siggen_Setup, root_file_name, root_tree_name; min_energy = 0, max_energy = 9999, save_hits = false, save_clusters = false, cluster_size = -1)
+function create_events(setup::MJDSigGen.Struct_MJD_Siggen_Setup, root_file_name, root_tree_name; min_energy = 0, max_energy = 9999, save_hits = false, save_clusters = false, cluster_size = -1f0)
 
     #input is a converted MaGe root file that has a hittree
     #min_energy = 600 is useful to save memory and storage space
@@ -69,7 +69,7 @@ function create_events(setup::MJDSigGen.Struct_MJD_Siggen_Setup, root_file_name,
             setup.use_diffusion = 1
 
             if cluster_size > 0 || save_hits || save_clusters 
-                positions = zeros(3, Nhits.x) #needs to stay Float64 because of the clustering algorithm
+                positions = zeros(Float32, 3, Nhits.x)
                 energies = zeros(Float32, Nhits.x)
                 if save_hits
                     pulses = Array{Array{Float32}}(0)
@@ -200,7 +200,6 @@ function create_events(setup::MJDSigGen.Struct_MJD_Siggen_Setup, root_file_name,
     allevents
 
 end
-
 
 function plot_crystal_3d(setup::MJDSigGen.Struct_MJD_Siggen_Setup)
     R = setup.xtal_radius
