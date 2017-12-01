@@ -109,3 +109,12 @@ function get_tau(samples::Vector, samplingtime::Real, firstsample::Integer, last
     samplingtime / fitresult.param[2]
 
 end
+
+
+function mwa(samples::Vector, window::Integer)
+    newsamples = zeros(samples)
+    for i in window:length(samples)
+        newsamples[i] = mean(samples[i-window+1:i])
+    end
+    newsamples
+end
