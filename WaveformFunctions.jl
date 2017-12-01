@@ -47,7 +47,7 @@ function get_risetime(samples::Vector; lowfraction = 0.05, highfraction = 0.95, 
 end
 
 
-function get_risetime_interpolate(samples::Vector; lowfraction = 0.05, highfraction = 0.95, pulseheight = 0, itpfactor = 0.1, samplingtime = 1, noisefilter = 1)
+function get_risetime_interpolate(samples::Vector; lowfraction = 0.05, highfracon = 0.95, pulseheight = 0, itpfactor = 0.1, samplingtime = 1, noisefilter = 1)
 
     if pulseheight == 0
         pulseheight = maximum(samples)
@@ -101,11 +101,11 @@ end
 
 model_exp(x, p) = p[1]*exp.(-x.*p[2])
 
-function get_tau(samples::Vector, delta_t::Real, firstsample::Integer, lastsample::Integer)
+function get_tau(samples::Vector, samplingtime::Real, firstsample::Integer, lastsample::Integer)
 
     xdata = convert(Array{Float64}, linspace(firstsample, lastsample, lastsample-firstsample+1))
     ydata = convert(Array{Float64}, samples[firstsample:lastsample])
     fitresult = curve_fit(model_exp, xdata, ydata, [2000., 1/4600.])
-    delta_t / fitresult.param[2]
+    samplingtime / fitresult.param[2]
 
 end
