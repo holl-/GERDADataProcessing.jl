@@ -1,7 +1,10 @@
+using LsqFit
+using Interpolations
+
 function find_intersect(samples::Vector, threshold::Real, noisefilter = 1)
 
     if noisefilter < 1 noisefilter = 1 end
-    if length(samples) < 1 error("Error: empty array") end
+    if length(samples) < 1 error("Empty array") end
     i = 1
     x = samples[i]
     counter = 0
@@ -24,7 +27,7 @@ function find_intersect(samples::Vector, threshold::Real, noisefilter = 1)
                 counter = 0
             end
         end
-        println("No intersect found")
+        #println("No intersect found")
         return NaN
     end
     return NaN
@@ -32,11 +35,30 @@ function find_intersect(samples::Vector, threshold::Real, noisefilter = 1)
 end
 
 
-function get_risetime(samples::Vector, lowfraction = 0.05, highfraction = 0.95, noisefilter = 1, samplingtime = 1)
+function get_risetime(samples::Vector; lowfraction = 0.05, highfraction = 0.95, pulseheight = 0, samplingtime = 1, noisefilter = 1)
 
-    lowindex = find_intersect(samples, lowfraction * maximum(samples), noisefilter)
-    highindex = find_intersect(samples, highfraction * maximum(samples), noisefilter)
+    if pulseheight == 0
+        pulseheight = maximum(samples)
+    end
+    lowindex = find_intersect(samples, lowfraction * pulseheight, noisefilter)
+    highindex = find_intersect(samples, highfraction * pulseheight, noisefilter)
     risetime = (highindex - lowindex) * samplingtime
+
+end
+
+
+function get_risetime_interpolate(samples::Vector; lowfraction = 0.05, highfraction = 0.95, pulseheight = 0, itpfactor = 0.1, samplingtime = 1, noisefilter = 1)
+
+    if pulseheight == 0
+        pulseheight = maximum(samples)
+    end
+
+    itp = interpolate(wf, BSpline(Quadratic(Flat())), OnCell())
+    interpolated_samples = [itp[t] for t in itpfactor:itpfactor:length(samples)]
+
+    lowindex = find_intersect(interpolated_samples, lowfraction * pulseheight, noisefilter)
+    highindex = find_intersect(interpolated_samples, highfraction * pulseheight, noisefilter)
+    risetime = (highindex - lowindex) * samplingtime * itpfactor
 
 end
 
@@ -76,7 +98,6 @@ function deconv_tau!(samples::Vector, tau::Real)
 
 end
 
-using LsqFit
 
 model_exp(x, p) = p[1]*exp.(-x.*p[2])
 
