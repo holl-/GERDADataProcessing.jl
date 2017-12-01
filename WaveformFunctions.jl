@@ -47,7 +47,7 @@ function get_risetime(samples::Vector; lowfraction = 0.05, highfraction = 0.95, 
 end
 
 
-function get_risetime_interpolate(samples::Vector; lowfraction = 0.05, highfracon = 0.95, pulseheight = 0, itpfactor = 0.1, samplingtime = 1, noisefilter = 1)
+function get_risetime_interpolate(samples::Vector; lowfraction = 0.05, highfraction = 0.95, pulseheight = 0, itpfactor = 0.1, samplingtime = 1, noisefilter = 1)
 
     if pulseheight == 0
         pulseheight = maximum(samples)
