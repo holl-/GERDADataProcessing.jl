@@ -1,5 +1,6 @@
 using LsqFit
 using Interpolations
+using DSP
 
 function find_intersect(samples::Vector, threshold::Real, noisefilter = 1)
 
@@ -117,4 +118,10 @@ function mwa(samples::Vector, window::Integer)
         newsamples[i] = mean(samples[i-window+1:i])
     end
     newsamples
+end
+
+function lowpass(samples::Vector; window::Integer=5, lowpass_cutoff=0.2)
+    designmethod=Butterworth(window)
+    ff = digitalfilter(Lowpass(lowpass_cutoff),designmethod)
+    return filtfilt(ff, samples)
 end
